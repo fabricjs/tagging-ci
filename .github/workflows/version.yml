@@ -58,6 +58,12 @@ jobs:
             const nonBlockingTags = process.env.NO_RELEASE_TAGS.split('\n');
             const { labels } = context.payload.pull_request;
 
+            // reset version
+            fs.writeFileSync('./package.json', JSON.stringify({ 
+              ...JSON.parse(fs.readFileSync('./package.json')), 
+              version
+            }, null, 2));
+
             // get version level from PR label
             const LABEL_PREFIX = 'release:';
             const releaseLabels = labels
@@ -67,21 +73,12 @@ jobs:
               throw new Error(`Found more than one release label: ${releaseLabels.join(', ')}`);
             }
             const releaseLevel = releaseLabels[0]?.replace(LABEL_PREFIX, '');
-            let shouldInc = !labels.some((label) => blockingTags.includes(label.name));
-            if (!releaseLevel && shouldInc) {
-              shouldInc = !labels.some((label) => nonBlockingTags.includes(label.name));
+            let shouldBump = !labels.some((label) => blockingTags.includes(label.name));
+            if (!releaseLevel && shouldBump) {
+              shouldBump = !labels.some((label) => nonBlockingTags.includes(label.name));
             }
-            // increment version
-            const nextVersion = shouldInc ?
-              semver.inc(version, releaseLabels[0]?.replace(LABEL_PREFIX, '') || 'prerelease', process.env.PRERELEASE_TAG) :
-              version;
-
-            // write file
-            fs.writeFileSync('./package.json', JSON.stringify({ 
-              ...JSON.parse(fs.readFileSync('./package.json')), 
-              version: nextVersion
-            }, null, 2));
-            execSync('npx prettier --write package.json');
+            const incLevel = releaseLabels[0]?.replace(LABEL_PREFIX, '') || 'prerelease';
+            shouldBump && execSync(`npm version ${incLevel} --preid ${process.env.PRERELEASE_TAG}`);
 
             if (nextVersion !== headVersion) {
               console.log(`Bumping version from ${version} to ${nextVersion}, current head version is ${headVersion}`);
