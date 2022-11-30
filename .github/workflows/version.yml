@@ -3,6 +3,7 @@ name: "🏷️"
 on:
   pull_request:
     branches: [main]
+    types: [labeled, unlabeled]
   pull_request_review:
     types: [submitted, dismissed]
 
