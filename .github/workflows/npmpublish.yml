@@ -19,7 +19,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - name: publish
-        run: npm publish --tag ${{ github.event.release.tag_name }} ${{ (github.event.release.prerelease && '--tag beta') || '' }}
+        run: npm publish --dry-run --tag ${{ github.event.release.tag_name }} ${{ (github.event.release.prerelease && '--tag beta') || '' }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
   update-bug-report:
@@ -61,7 +61,7 @@ jobs:
         with:
           dropdown: _node_version
           package: node
-          semver: '>=14.0.0'
+          semver: ">=14.0.0"
           dry_run: no-push
       - name: Commit & PR
         uses: peter-evans/create-pull-request@v4.1.3
@@ -71,7 +71,7 @@ jobs:
           base: master
           delete-branch: true
           labels: CI/CD, bot, task
-          title: 'chore(): Update bug report'
+          title: "chore(): Update bug report"
           body: |
             Automated update to `.github/ISSUE_TEMPLATE/bug_report.yml`
             Triggered by job [`${{ github.job }}`](../actions/runs/${{ github.run_id }})
