@@ -2,7 +2,7 @@
         Hi there!
         Thanks for taking the time and putting the effort into making fabric better! 💖
         Take a look at /CONTRIBUTING.md for crucial instructions regarding local setup, testing etc.
-        https://github.com/fabricjs/fabric.js/blob/master/CONTRIBUTING.md
+        https://github.com/fabricjs/fabric.js/blob/main/CONTRIBUTING.md
 
         Adding tests that verify your fix and safeguard it from unwanted loss and changes is a MUST.
 
@@ -22,7 +22,7 @@
         https://github.com/fabricjs/fabric.js/issues/7596
 
         If you remain strong minded about PRing and the fix is small you can submit a PR to the 5.x branch
-        During the migration we will port these changes to master
+        During the migration we will port these changes to main
 -->
 
 ## Motivation

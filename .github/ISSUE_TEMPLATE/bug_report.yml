@@ -1,6 +1,6 @@
 name: 🐛 Bug Report
 description: File a bug report
-title: '[Bug]: '
+title: "[Bug]: "
 body:
   - type: markdown
     attributes:
@@ -16,17 +16,17 @@ body:
       label: CheckList
       description: >-
         By submitting this issue, you agree to follow our [Code of
-        Conduct](https://github.com/fabricjs/fabric.js/blob/master/CODE_OF_CONDUCT.md)
+        Conduct](https://github.com/fabricjs/fabric.js/blob/main/CODE_OF_CONDUCT.md)
       options:
         - label: I agree to follow this project's Code of Conduct
           required: true
         - label: >-
             I have read and followed the [Contributing
-            Guide](https://github.com/fabricjs/fabric.js/blob/master/CONTRIBUTING.md)
+            Guide](https://github.com/fabricjs/fabric.js/blob/main/CONTRIBUTING.md)
           required: true
         - label: >-
             I have read and followed the [Issue Tracker
-            Guide](https://github.com/fabricjs/fabric.js/blob/master/CONTRIBUTING.md#%EF%B8%8F-issue-tracker)
+            Guide](https://github.com/fabricjs/fabric.js/blob/main/CONTRIBUTING.md#%EF%B8%8F-issue-tracker)
           required: true
         - label: I have searched and referenced existing issues and discussions
           required: true
@@ -69,7 +69,7 @@ body:
       label: In What environments are you experiencing the problem?
       description: >-
         checkout the [supported
-        browsers](https://github.com/fabricjs/fabric.js/blob/master/README.md#supported-browsersenvironments)
+        browsers](https://github.com/fabricjs/fabric.js/blob/main/README.md#supported-browsersenvironments)
       multiple: true
       options:
         - Firefox
