@@ -3,7 +3,7 @@ name: Node.js Package
 on:
   release:
     branches:
-      - master
+      - main
       - 5.x
     types: [published]
 
@@ -30,7 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: master
+          ref: main
       - uses: actions/setup-node@v3
         with:
           node-version: 16.x
@@ -68,7 +68,7 @@ jobs:
         with:
           add-paths: .github/ISSUE_TEMPLATE/bug_report.yml
           branch: ci-update-bug-report
-          base: master
+          base: main
           delete-branch: true
           labels: CI/CD, bot, task
           title: "chore(): Update bug report"

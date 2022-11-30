@@ -1,26 +1,26 @@
-name: '🏷️'
+name: "🏷️"
 
 on:
   pull_request:
-    branches: [master]
+    branches: [main]
   pull_request_review:
     types: [submitted, dismissed]
 
 jobs:
-  master-version:
+  main-version:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ env.BASE_VERSION }}
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: master
+          ref: main
       - name: base version
         run: echo "BASE_VERSION=$(jq -r '.version' package.json)" >> $GITHUB_ENV
   bump-version:
     name: bump version
     runs-on: ubuntu-latest
-    needs: master-version
+    needs: main-version
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -44,7 +44,7 @@ jobs:
           NO_RELEASE_TAGS: |
             CI/CD
             docs
-          BASE_VERSION: ${{ needs.master-version.outputs.version }}
+          BASE_VERSION: ${{ needs.main-version.outputs.version }}
           PRERELEASE_TAG: beta
         with:
           result-encoding: string
