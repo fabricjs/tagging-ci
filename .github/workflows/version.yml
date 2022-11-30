@@ -27,6 +27,10 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.ref }}
+      - name: Setup git
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email github-actions[bot]@users.noreply.github.com
       - uses: actions/setup-node@v3
         with:
           node-version: 16.x
@@ -58,6 +62,15 @@ jobs:
             const nonBlockingTags = process.env.NO_RELEASE_TAGS.split('\n');
             const { labels } = context.payload.pull_request;
 
+            // reset version
+            fs.writeFileSync('./package.json', JSON.stringify({ 
+              ...JSON.parse(fs.readFileSync('./package.json')), 
+              version
+            }, null, 2));
+
+            execSync('git add package.json');
+            execSync('git commit -m "revert package.json version"');
+
             // get version level from PR label
             const LABEL_PREFIX = 'release:';
             const releaseLabels = labels
@@ -67,34 +80,24 @@ jobs:
               throw new Error(`Found more than one release label: ${releaseLabels.join(', ')}`);
             }
             const releaseLevel = releaseLabels[0]?.replace(LABEL_PREFIX, '');
-            let shouldInc = !labels.some((label) => blockingTags.includes(label.name));
-            if (!releaseLevel && shouldInc) {
-              shouldInc = !labels.some((label) => nonBlockingTags.includes(label.name));
+            let shouldBump = !labels.some((label) => blockingTags.includes(label.name));
+            if (!releaseLevel && shouldBump) {
+              shouldBump = !labels.some((label) => nonBlockingTags.includes(label.name));
             }
-            // increment version
-            const nextVersion = shouldInc ?
-              semver.inc(version, releaseLabels[0]?.replace(LABEL_PREFIX, '') || 'prerelease', process.env.PRERELEASE_TAG) :
-              version;
-
-            // write file
-            fs.writeFileSync('./package.json', JSON.stringify({ 
-              ...JSON.parse(fs.readFileSync('./package.json')), 
-              version: nextVersion
-            }, null, 2));
-            execSync('npx prettier --write package.json');
-
-            if (nextVersion !== headVersion) {
-              console.log(`Bumping version from ${version} to ${nextVersion}, current head version is ${headVersion}`);
-              return nextVersion;
-            } else {
-              console.log(`Version is up to date (${headVersion})`);
-              return '';
+            if (shouldBump) {
+              let tag;
+              const incLevel = releaseLabels[0]?.replace(LABEL_PREFIX, '') || 'prerelease';
+              try {
+                tag = execSync(`npm version ${incLevel} --preid ${process.env.PRERELEASE_TAG}`).toString().trim();
+              } catch(error) {
+                console.log('Failed to bump version', error);
+              }
+              console.log({tag});
+              try {
+                execSync('git push');
+              } catch(error) {
+                console.log('Failed to push', error);
+              }
+              return tag;
             }
-      - name: Commit & Push
-        if: steps.inc-version.outputs.result
-        run: |
-          git config user.name github-actions[bot]
-          git config user.email github-actions[bot]@users.noreply.github.com
-          git add package.json
-          git commit -m "v${{ steps.inc-version.outputs.result }}"
-          git push
+            return '';
