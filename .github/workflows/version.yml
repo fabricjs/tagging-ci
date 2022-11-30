@@ -88,7 +88,7 @@ jobs:
               let tag;
               const incLevel = releaseLabels[0]?.replace(LABEL_PREFIX, '') || 'prerelease';
               try {
-                tag = execSync(`npm version ${incLevel} --preid ${process.env.PRERELEASE_TAG}`).toString();
+                tag = execSync(`npm version ${incLevel} --preid ${process.env.PRERELEASE_TAG}`).toString().trim();
               } catch(error) {
                 console.log('Failed to bump version', error);
               }
