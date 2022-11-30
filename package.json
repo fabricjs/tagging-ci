@@ -1,5 +1,5 @@
 {
-  "name": "@fabricjs/tagging-ci",
+  "name": "fabricjs-tagging-ci",
   "version": "1.0.0",
   "description": "Repo for testing tagging, releasing etc. via CI",
   "main": "index.js",
