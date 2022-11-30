@@ -84,15 +84,20 @@ jobs:
             if (!releaseLevel && shouldBump) {
               shouldBump = !labels.some((label) => nonBlockingTags.includes(label.name));
             }
-            const incLevel = releaseLabels[0]?.replace(LABEL_PREFIX, '') || 'prerelease';
-            try {
-              if (shouldBump) {
-                const tag = execSync(`npm version ${incLevel} --preid ${process.env.PRERELEASE_TAG}`).toString();
-                try {
-                  execSync('git push');
-                } catch (error) {
-                  
-                }
-            } catch (error) {
-              console.log('error', error);
+            if (shouldBump) {
+              let tag;
+              const incLevel = releaseLabels[0]?.replace(LABEL_PREFIX, '') || 'prerelease';
+              try {
+                tag = execSync(`npm version ${incLevel} --preid ${process.env.PRERELEASE_TAG}`).toString();
+              } catch(error) {
+                console.log('Failed to bump version', error);
+              }
+              console.log({tag});
+              try {
+                execSync('git push');
+              } catch(error) {
+                console.log('Failed to push', error);
+              }
+              return tag;
             }
+            return '';
