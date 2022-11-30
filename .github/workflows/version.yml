@@ -27,6 +27,10 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.ref }}
+      - name: Setup git
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email github-actions[bot]@users.noreply.github.com
       - uses: actions/setup-node@v3
         with:
           node-version: 16.x
@@ -64,6 +68,9 @@ jobs:
               version
             }, null, 2));
 
+            execSync('git add package.json');
+            execSync('git commit -m "revert package.json version"');
+
             // get version level from PR label
             const LABEL_PREFIX = 'release:';
             const releaseLabels = labels
@@ -78,20 +85,8 @@ jobs:
               shouldBump = !labels.some((label) => nonBlockingTags.includes(label.name));
             }
             const incLevel = releaseLabels[0]?.replace(LABEL_PREFIX, '') || 'prerelease';
-            shouldBump && execSync(`npm version ${incLevel} --preid ${process.env.PRERELEASE_TAG}`);
-
-            if (nextVersion !== headVersion) {
-              console.log(`Bumping version from ${version} to ${nextVersion}, current head version is ${headVersion}`);
-              return nextVersion;
-            } else {
-              console.log(`Version is up to date (${headVersion})`);
-              return '';
+            try {
+              console.log(shouldBump && execSync(`npm version ${incLevel} --preid ${process.env.PRERELEASE_TAG}`).toString());
+            } catch (error) {
+              console.log('error', error);
             }
-      - name: Commit & Push
-        if: steps.inc-version.outputs.result
-        run: |
-          git config user.name github-actions[bot]
-          git config user.email github-actions[bot]@users.noreply.github.com
-          git add package.json
-          git commit -m "v${{ steps.inc-version.outputs.result }}"
-          git push
