@@ -86,7 +86,13 @@ jobs:
             }
             const incLevel = releaseLabels[0]?.replace(LABEL_PREFIX, '') || 'prerelease';
             try {
-              console.log(shouldBump && execSync(`npm version ${incLevel} --preid ${process.env.PRERELEASE_TAG}`).toString());
+              if (shouldBump) {
+                const tag = execSync(`npm version ${incLevel} --preid ${process.env.PRERELEASE_TAG}`).toString();
+                try {
+                  execSync('git push');
+                } catch (error) {
+                  
+                }
             } catch (error) {
               console.log('error', error);
             }
