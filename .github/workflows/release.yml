@@ -1,0 +1,60 @@
+name: Release
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  release-on-push:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+          cache: npm
+      - run: npm ci
+      - name: Release
+        id: version
+        uses: actions/github-script@v6
+        with:
+          result-encoding: string
+          script: |
+            const fs = require('fs');
+            const semver = require('semver');
+            const { version } = JSON.parse(fs.readFileSync('./package.json'));
+            const tag = `v${version}`;
+            const { owner, repo } = context.repo;
+            let res;
+            if(context.payload.commits.some(commit => commit.message.includes('norelease'))) {
+              console.log('Aborting release');
+              return;
+            }
+            try {
+              const { data: { id } } = await github.rest.repos.getReleaseByTag({
+                owner,
+                repo,
+                tag,
+              });
+              console.log(`Updating release ${tag}`);
+              res = await github.rest.repos.updateRelease({
+                owner,
+                repo,
+                release_id: id
+              });
+            } catch(error) {
+              console.log(`Releasing ${tag}`);
+              const body = `**View the [CHANGELOG](CHANGELOG.md)**\n`;
+              res = await github.rest.repos.createRelease({
+                owner,
+                repo,
+                tag_name: tag,
+                body,
+                generate_release_notes: true,
+                prerelease: !!semver.prerelease(version)
+              });
+            }
+            console.log(`View ${tag} at ${res.data.html_url}`);
+            return res;
