@@ -2,7 +2,19 @@ name: Release
 
 on:
   push:
-    branches: [main]
+    branches:
+      [main]
+
+      # await github.rest.git.createTag({
+      #   owner,
+      #   repo,
+      #   tag,
+      #   message: tag,
+      #   object,
+      #   type,
+      #   tagger.name,
+      #   tagger.email
+      # });
 
 jobs:
   release-on-push:
@@ -61,7 +73,12 @@ jobs:
             } catch(error) {
               console.log(`Releasing ${tag}`);
               const body = `**View the [CHANGELOG](CHANGELOG.md)**\n`;
-
+              await octokit.rest.git.createRef({
+                owner,
+                repo,
+                ref: `refs/tags/${tag}`,
+                sha: context.payload.after,
+              });
               res = await github.rest.repos.createRelease({
                 owner,
                 repo,
