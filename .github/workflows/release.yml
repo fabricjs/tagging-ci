@@ -28,13 +28,12 @@ jobs:
             const tag = `v${version}`;
             const { owner, repo } = context.repo;
             let res;
-            const labels = [];
-            (await Promise.all(context.payload.commits.map(commit => github.rest.repos.listPullRequestsAssociatedWithCommit({
+            const prs = (await Promise.all(context.payload.commits.map(commit => github.rest.repos.listPullRequestsAssociatedWithCommit({
               owner,
               repo,
               commit_sha: commit.id,
             })))).forEach(({ data }) => {
-              labels.push(...data.labels);
+              data.forEach(pr => labels.push(...pr.labels));
             });
             console.log({labels});
             if(context.payload.commits.some(commit => commit.message.includes('norelease'))) {
