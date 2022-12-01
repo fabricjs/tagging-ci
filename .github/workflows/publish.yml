@@ -71,7 +71,7 @@ jobs:
           semver: ${{ steps.semver-range.outputs.result }}
           dry_run: no-push
       - name: Update bug report node version
-        uses: ShaMan123/gha-populate-form-version@v2.0.1
+        uses: ShaMan123/gha-populate-form-version@v2.0.2
         with:
           dropdown: _node_version
           package: node
