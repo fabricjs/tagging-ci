@@ -17,7 +17,7 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Release
-        id: version
+        id: release
         uses: actions/github-script@v6
         env:
           # list of labels that block bumping the version
@@ -32,7 +32,6 @@ jobs:
             const tag = `v${version}`;
             const { owner, repo } = context.repo;
             const blockingLabels = process.env.STRICT_NO_RELEASE_LABELS.split('\n');
-            let res;
             const labels = [];
             (await Promise.all(context.payload.commits.map(commit => github.rest.repos.listPullRequestsAssociatedWithCommit({
               owner,
@@ -53,11 +52,13 @@ jobs:
                 tag,
               });
               console.log(`Updating release ${tag}`);
-              res = await github.rest.repos.updateRelease({
+              const res = await github.rest.repos.updateRelease({
                 owner,
                 repo,
                 release_id: id
               });
+              console.log(`View ${tag} at ${res.data.html_url}`);
+              return null;
             } catch(error) {
               console.log(`Releasing ${tag}`);
               const body = `**View the [CHANGELOG](CHANGELOG.md)**\n`;
@@ -82,7 +83,7 @@ jobs:
                   sha: context.payload.after,
                 });
               */
-              res = await github.rest.repos.createRelease({
+              const res = await github.rest.repos.createRelease({
                 owner,
                 repo,
                 tag_name: tag,
@@ -90,6 +91,15 @@ jobs:
                 generate_release_notes: true,
                 prerelease: !!semver.prerelease(version)
               });
+              console.log(`View ${tag} at ${res.data.html_url}`);
+              return res;
             }
-            console.log(`View ${tag} at ${res.data.html_url}`);
-            return res;
+      - name: Publish
+        if: fromJSON(steps.release.outputs.result)
+        env:
+          TAG_NAME: fromJSON(steps.release.outputs.result).tag_name
+          PRERELEASE: (fromJSON(steps.release.outputs.result).prerelease && '--tag beta') || ''
+          PRERELEASE_TAG: beta
+        run: |
+          npm run build
+          npm publish --tag ${{ env.TAG_NAME }} ${{ env.PRERELEASE }}
