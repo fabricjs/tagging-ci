@@ -104,6 +104,6 @@ jobs:
     uses: ./.github/workflows/publish.yml
     with:
       tag: ${{ needs.release-on-push.outputs.tag }}
-      prerelease: ${{ needs.release-on-push.outputs.prerelease }}
+      prerelease: ${{ fromJSON(needs.release-on-push.outputs.prerelease) }}
       preid: beta
     secrets: inherit
