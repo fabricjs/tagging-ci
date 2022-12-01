@@ -7,7 +7,7 @@ on:
       - labeled
       - unlabeled
       - opened
-      - synchronized
+      - synchronize
       - reopened
   pull_request_review:
     types: [submitted, dismissed]
