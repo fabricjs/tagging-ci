@@ -4,21 +4,24 @@ import semver from "semver";
 
 const LABEL_PREFIX = "release:";
 
-export async function bumpPRVersion(context) {
-  const version = process.env.BASE_VERSION;
+export async function bumpPRVersion({
+  labels,
+  strictNoReleaseLabels,
+  noReleaseLabels,
+  baseVersion,
+  prereleaseTag = "beta",
+}) {
   const { version: headVersion } = JSON.parse(
     fs.readFileSync("./package.json")
   );
-
-  const blockingLabels = process.env.STRICT_NO_RELEASE_LABELS.split("\n");
-  const nonBlockingLabels = process.env.NO_RELEASE_LABELS.split("\n");
-  const { labels } = context.payload.pull_request;
 
   // get version level from PR label
   const releaseLabels = labels
     .map((label) => label.name)
     .filter((label) => label.startsWith(LABEL_PREFIX));
-  let shouldBump = !labels.some((label) => blockingLabels.includes(label.name));
+  let shouldBump = !labels.some((label) =>
+    strictNoReleaseLabels.includes(label.name)
+  );
   if (releaseLabels.length > 1 && shouldBump) {
     throw new Error(
       `Found more than one release label: ${releaseLabels.join(", ")}`
@@ -26,18 +29,16 @@ export async function bumpPRVersion(context) {
   }
   const releaseLevel = releaseLabels[0]?.replace(LABEL_PREFIX, "");
   if (!releaseLevel && shouldBump) {
-    shouldBump = !labels.some((label) =>
-      nonBlockingLabels.includes(label.name)
-    );
+    shouldBump = !labels.some((label) => noReleaseLabels.includes(label.name));
   }
   // increment version
   const nextVersion = shouldBump
     ? semver.inc(
-        version,
+        baseVersion,
         releaseLabels[0]?.replace(LABEL_PREFIX, "") || "prerelease",
-        process.env.PRERELEASE_TAG
+        prereleaseTag
       )
-    : version;
+    : baseVersion;
 
   // write file
   fs.writeFileSync(
@@ -55,7 +56,7 @@ export async function bumpPRVersion(context) {
 
   if (nextVersion !== headVersion) {
     console.log(
-      `Bumping version from ${version} to ${nextVersion}, current head version is ${headVersion}`
+      `Bumping version from ${baseVersion} to ${nextVersion}, current head version is ${headVersion}`
     );
     return nextVersion;
   } else {

@@ -47,7 +47,7 @@ jobs:
             norelease
           # list of labels that shouldn't bump the version by default
           # adding a release label overrides this configuration
-          NO_RELEASE_TAGS: |
+          NO_RELEASE_LABELS: |
             CI/CD
             docs
           BASE_VERSION: ${{ needs.main-version.outputs.version }}
@@ -56,7 +56,19 @@ jobs:
           result-encoding: string
           script: |
             const { bumpPRVersion } = await import('${{ github.workspace }}/scripts/versioning.mjs');
-            return bumpPRVersion(context);
+            const {
+              STRICT_NO_RELEASE_LABELS: strictNoReleaseLabels,
+              NO_RELEASE_LABELS: noReleaseLabels,
+              BASE_VERSION: baseVersion,
+              PRERELEASE_TAG: prereleaseTag
+            }
+            return bumpPRVersion(context, {
+              labels: context.payload.pull_request.labels,
+              strictNoReleaseLabels: strictNoReleaseLabels.split('\n'),
+              noReleaseLabels: noReleaseLabels.split('\n'),
+              baseVersion,
+              prereleaseTag
+            });
       - name: Commit & Push
         if: steps.inc-version.outputs.result
         run: |
