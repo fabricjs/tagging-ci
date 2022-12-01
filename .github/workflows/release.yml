@@ -103,4 +103,4 @@ jobs:
           PRERELEASE: ${{ (fromJSON(steps.release.outputs.result).prerelease && format('--tag {0}', env.PRERELEASE_TAG)) || '' }}
         run: |
           npm run build
-          npm publish --tag ${{ env.TAG_NAME }} ${{ env.PRERELEASE }}
+          npm publish --dry-run --tag ${{ env.TAG_NAME }} ${{ env.PRERELEASE }}
