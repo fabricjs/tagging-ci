@@ -6,10 +6,11 @@ on:
       tag:
         type: string
         default: ""
-        description: tag by npm, e.g. `npm i fabric@tag`
+        description: tag value to pass to npm that will be used as follows `npm i fabric@tag`
       preid:
         type: string
-        default: "beta"
+        default: beta
+        description: tag value in case `tag` input is empty and the `prerelease` input is true
       prerelease:
         type: boolean
         default: false
