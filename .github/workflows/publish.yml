@@ -66,7 +66,7 @@ jobs:
             const fromMajor = latestMajor - parseInt(process.env.MAJOR_DIFF);
             return `>=${fromMajor}.0.0 || >=${latestMajor}.0.0-${process.env.PRERELEASE_TAG}`;
       - name: Update bug report version
-        uses: ShaMan123/gha-populate-form-version@v2.0.1
+        uses: ShaMan123/gha-populate-form-version@v2.0.2
         with:
           semver: ${{ steps.semver-range.outputs.result }}
           dry_run: no-push
