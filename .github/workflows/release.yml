@@ -99,12 +99,11 @@ jobs:
               return JSON.stringify(res.data);
             }
   publish:
-    - name: Publish
-      needs: release-on-push
-      if: fromJSON(steps.release.outputs.result)
-      uses: ./.github/workflows/publish.yml
-      with:
-        tag: ${{ needs.release-on-push.outputs.tag_name }}
-        preid: ${{ env.PRERELEASE_TAG }}
-        prerelease: ${{ needs.release-on-push.outputs.prerelease }}
-      secrets: inherit
+    needs: release-on-push
+    if: fromJSON(steps.release.outputs.result)
+    uses: ./.github/workflows/publish.yml
+    with:
+      tag: ${{ needs.release-on-push.outputs.tag_name }}
+      preid: ${{ env.PRERELEASE_TAG }}
+      prerelease: ${{ needs.release-on-push.outputs.prerelease }}
+    secrets: inherit
