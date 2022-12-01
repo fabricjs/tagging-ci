@@ -15,6 +15,9 @@ on:
       bug-report-major-diff:
         type: number
         default: 2
+      dry-run:
+        type: boolean
+        default: true
     secrets:
       npm_token:
         required: true
@@ -34,7 +37,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - name: publish
-        run: npm publish --tag ${{ inputs.tag || (inputs.prerelease && inputs.preid) || 'latest' }}
+        run: npm publish --tag ${{ inputs.tag || (inputs.prerelease && inputs.preid) || 'latest' }} ${{ (inputs.dry-run && '--dry-run') || '' }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
   update-bug-report:
