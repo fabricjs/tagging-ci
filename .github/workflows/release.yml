@@ -32,7 +32,7 @@ jobs:
               owner,
               repo,
               commit_sha: commit.id,
-            })))).reduce((flat, res) => flat.concat(res.data), []);
+            })))).reduce((flat, res) => flat.concat(...res.data.map(pr => pr.labels)), []);
             console.log({prs});
             if(context.payload.commits.some(commit => commit.message.includes('norelease'))) {
               console.log('Aborting release');
