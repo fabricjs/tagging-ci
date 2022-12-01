@@ -92,7 +92,7 @@ jobs:
                 prerelease: !!semver.prerelease(version)
               });
               console.log(`View ${tag} at ${res.data.html_url}`);
-              return res.data;
+              return JSON.stringify(res.data);
             }
       - name: Publish
         if: fromJSON(steps.release.outputs.result)
