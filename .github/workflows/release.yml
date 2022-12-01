@@ -11,8 +11,8 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       PRERELEASE_TAG: beta
     outputs:
-      tag: ${{ fromJSON(steps.release.outputs.result).tag_name }}
-      prerelease: ${{ fromJSON(steps.release.outputs.result).prerelease }}
+      tag: ${{ fromJSON(steps.release.outputs.result) && fromJSON(steps.release.outputs.result).tag_name }}
+      prerelease: ${{ fromJSON(steps.release.outputs.result) && fromJSON(steps.release.outputs.result).prerelease }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -62,7 +62,7 @@ jobs:
                 release_id: id
               });
               console.log(`View ${tag} at ${res.data.html_url}`);
-              return null;
+              return;
             } catch(error) {
               console.log(`Releasing ${tag}`);
               const body = `**View the [CHANGELOG](CHANGELOG.md)**\n`;
@@ -100,10 +100,10 @@ jobs:
             }
   publish:
     needs: release-on-push
-    if: fromJSON(steps.release.outputs.result)
+    if: needs.release-on-push.outputs.tag
     uses: ./.github/workflows/publish.yml
     with:
-      tag: ${{ needs.release-on-push.outputs.tag_name }}
+      tag: ${{ needs.release-on-push.outputs.tag }}
       prerelease: ${{ needs.release-on-push.outputs.prerelease }}
       preid: beta
     secrets: inherit
