@@ -1,6 +1,6 @@
 name: 🐛 Bug Report
 description: File a bug report
-title: "[Bug]: "
+title: '[Bug]: '
 body:
   - type: markdown
     attributes:
@@ -8,8 +8,8 @@ body:
         Thank you for wanting to create an issue in this repository. 
 
         Before you do, please ensure you are filing the issue in the right
-        place. 
-        For anything else (such as questions) use [Discussions](https://github.com/fabricjs/fabric.js/discussions).
+        place.  For anything else (such as questions) use
+        [Discussions](https://github.com/fabricjs/fabric.js/discussions).
   - type: checkboxes
     id: terms
     attributes:
@@ -47,20 +47,7 @@ body:
         latest before filing a bug report, your issue might have been resolved
         already.
       options:
-        - 5.2.4
-        - 5.2.2
-        - 5.2.1
-        - 5.1.0
-        - 5.0.0
-        - 4.6.0
-        - 4.5.1
-        - 4.5.0
-        - 4.4.0
-        - 4.3.1
-        - 4.3.0
-        - 4.2.0
-        - 4.1.0
-        - 4.0.0
+        - 1.0.0
     validations:
       required: true
   - type: dropdown
