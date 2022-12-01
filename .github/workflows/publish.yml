@@ -4,14 +4,14 @@ on:
   workflow_call:
     inputs:
       tag:
-        required: true
         type: string
-      prerelease:
-        required: true
-        type: boolean
+        default: ""
       preid:
         type: string
-        default: beta
+        default: "beta"
+      prerelease:
+        type: boolean
+        default: false
       bug-report-major-diff:
         type: number
         default: 2
@@ -22,16 +22,19 @@ on:
 jobs:
   publish-npm:
     runs-on: ubuntu-latest
+    env:
+      PRERELEASE_TAG: beta
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org/
+          cache: npm
       - run: npm ci
       - run: npm run build
       - name: publish
-        run: npm publish --dry-run --tag ${{ inputs.tag }} ${{ (inputs.prerelease && format('--tag {0}', inputs.preid)) || '' }}
+        run: npm publish --tag ${{ inputs.tag || (inputs.prerelease && inputs.preid) || 'latest' }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
   update-bug-report:
