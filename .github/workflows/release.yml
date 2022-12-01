@@ -19,6 +19,10 @@ jobs:
       - name: Release
         id: version
         uses: actions/github-script@v6
+        env:
+          # list of labels that block bumping the version
+          STRICT_NO_RELEASE_LABELS: |
+            norelease
         with:
           result-encoding: string
           script: |
@@ -28,16 +32,17 @@ jobs:
             const tag = `v${version}`;
             const { owner, repo } = context.repo;
             let res;
+            const blockingLabels = process.env.STRICT_NO_RELEASE_LABELS.split('\n');
             const labels = [];
             const prs = (await Promise.all(context.payload.commits.map(commit => github.rest.repos.listPullRequestsAssociatedWithCommit({
               owner,
               repo,
               commit_sha: commit.id,
             })))).forEach(({ data }) => {
-              data.forEach(pr => labels.push(...pr.labels));
+              data.forEach(pr => labels.push(...pr.labels.map(label => label.name)));
             });
             console.log({labels});
-            if(labels.includes('norelease') || context.payload.commits.some(commit => commit.message.includes('norelease'))) {
+            if(blockingLabels.some(label => labels.includes(label)) || context.payload.commits.some(commit => commit.message.includes('norelease'))) {
               console.log('Aborting release');
               return;
             }

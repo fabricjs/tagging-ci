@@ -43,7 +43,7 @@ jobs:
         uses: actions/github-script@v6
         env:
           # list of labels that block bumping the version
-          STRICT_NO_RELEASE_TAGS: |
+          STRICT_NO_RELEASE_LABELS: |
             norelease
           # list of labels that shouldn't bump the version by default
           # adding a release label overrides this configuration
@@ -60,7 +60,7 @@ jobs:
             const semver = require('semver');
             const version = process.env.BASE_VERSION;
             const { version: headVersion } = JSON.parse(fs.readFileSync('./package.json'));
-            const blockingTags = process.env.STRICT_NO_RELEASE_TAGS.split('\n');
+            const blockingTags = process.env.STRICT_NO_RELEASE_LABELS.split('\n');
             const nonBlockingTags = process.env.NO_RELEASE_TAGS.split('\n');
             const { labels } = context.payload.pull_request;
 
