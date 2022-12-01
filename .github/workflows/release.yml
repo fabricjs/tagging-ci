@@ -28,11 +28,11 @@ jobs:
             const tag = `v${version}`;
             const { owner, repo } = context.repo;
             let res;
-            const prs = await Promise.all(context.payload.commits.map(commit => github.rest.repos.listPullRequestsAssociatedWithCommit({
+            const prs = (await Promise.all(context.payload.commits.map(commit => github.rest.repos.listPullRequestsAssociatedWithCommit({
               owner,
               repo,
               commit_sha: commit.id,
-            }))).reduce((flat, res) => flat.concat(res), []);
+            })))).reduce((flat, res) => flat.concat(res), []);
             console.log({prs});
             if(context.payload.commits.some(commit => commit.message.includes('norelease'))) {
               console.log('Aborting release');
