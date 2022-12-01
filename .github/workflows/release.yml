@@ -73,7 +73,7 @@ jobs:
             } catch(error) {
               console.log(`Releasing ${tag}`);
               const body = `**View the [CHANGELOG](CHANGELOG.md)**\n`;
-              await octokit.rest.git.createRef({
+              await github.rest.git.createRef({
                 owner,
                 repo,
                 ref: `refs/tags/${tag}`,
