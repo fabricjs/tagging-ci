@@ -97,8 +97,8 @@ jobs:
       - name: Publish
         if: fromJSON(steps.release.outputs.result)
         env:
-          TAG_NAME: fromJSON(steps.release.outputs.result).tag_name
-          PRERELEASE: (fromJSON(steps.release.outputs.result).prerelease && '--tag beta') || ''
+          TAG_NAME: ${{ fromJSON(steps.release.outputs.result).tag_name }}
+          PRERELEASE: ${{ (fromJSON(steps.release.outputs.result).prerelease && '--tag beta') || '' }}
           PRERELEASE_TAG: beta
         run: |
           npm run build
