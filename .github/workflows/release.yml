@@ -97,10 +97,9 @@ jobs:
             }
       - name: Publish
         if: fromJSON(steps.release.outputs.result)
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          TAG_NAME: ${{ fromJSON(steps.release.outputs.result).tag_name }}
-          PRERELEASE: ${{ (fromJSON(steps.release.outputs.result).prerelease && format('--tag {0}', env.PRERELEASE_TAG)) || '' }}
-        run: |
-          npm run build
-          npm publish --dry-run --tag ${{ env.TAG_NAME }} ${{ env.PRERELEASE }}
+        uses: .github/workflows/publish.yml
+        with:
+          tag: ${{ fromJSON(steps.release.outputs.result).tag_name }}
+          preid: ${{ env.PRERELEASE_TAG }}
+          prerelease: ${{ fromJSON(steps.release.outputs.result).prerelease }}
+        secrets: inherit
