@@ -2,19 +2,7 @@ name: Release
 
 on:
   push:
-    branches:
-      [main]
-
-      # await github.rest.git.createTag({
-      #   owner,
-      #   repo,
-      #   tag,
-      #   message: tag,
-      #   object,
-      #   type,
-      #   tagger.name,
-      #   tagger.email
-      # });
+    branches: [main]
 
 jobs:
   release-on-push:
@@ -43,6 +31,7 @@ jobs:
             const { version } = JSON.parse(fs.readFileSync('./package.json'));
             const tag = `v${version}`;
             const { owner, repo } = context.repo;
+
             let res;
             const blockingLabels = process.env.STRICT_NO_RELEASE_LABELS.split('\n');
             const labels = [];
@@ -73,6 +62,19 @@ jobs:
             } catch(error) {
               console.log(`Releasing ${tag}`);
               const body = `**View the [CHANGELOG](CHANGELOG.md)**\n`;
+              const { name, email } = context.payload.pusher;
+              await github.rest.git.createTag({
+                owner,
+                repo,
+                tag,
+                message: tag,
+                object: context.payload.after,
+                type: 'commit',
+                tagger:{
+                  name,
+                  email
+                }
+              });
               await github.rest.git.createRef({
                 owner,
                 repo,
