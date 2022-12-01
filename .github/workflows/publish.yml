@@ -39,6 +39,8 @@ jobs:
     # wait for publishing to complete
     needs: publish-npm
     if: always()
+    env:
+      NODE_MIN_VERSION: 14.0.0
     steps:
       - uses: actions/checkout@v3
         with:
@@ -73,7 +75,7 @@ jobs:
         with:
           dropdown: _node_version
           package: node
-          semver: ">=14.0.0"
+          semver: ">=${{ env.NODE_MIN_VERSION }}"
           dry_run: no-push
       - name: Commit & PR
         uses: peter-evans/create-pull-request@v4.1.3
