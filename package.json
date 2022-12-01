@@ -1,6 +1,6 @@
 {
   "name": "fabricjs-tagging-ci",
-  "version": "1.2.0",
+  "version": "1.2.1-beta.0",
   "description": "Repo for testing tagging, releasing etc. via CI",
   "main": "index.js",
   "repository": {
