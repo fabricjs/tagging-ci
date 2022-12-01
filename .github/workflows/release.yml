@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      PRERELEASE_TAG: beta
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -97,9 +98,9 @@ jobs:
       - name: Publish
         if: fromJSON(steps.release.outputs.result)
         env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           TAG_NAME: ${{ fromJSON(steps.release.outputs.result).tag_name }}
-          PRERELEASE: ${{ (fromJSON(steps.release.outputs.result).prerelease && '--tag beta') || '' }}
-          PRERELEASE_TAG: beta
+          PRERELEASE: ${{ (fromJSON(steps.release.outputs.result).prerelease && '--tag ${{ env.PRERELEASE_TAG }}') || '' }}
         run: |
           npm run build
           npm publish --tag ${{ env.TAG_NAME }} ${{ env.PRERELEASE }}
