@@ -63,7 +63,7 @@ jobs:
             const semver = require('semver');
             const { version } = JSON.parse(fs.readFileSync('./package.json'));
             const latestMajor = semver.major(version);
-            const fromMajor = latestMajor - parseInt(process.env.MAJOR_DIFF);
+            const fromMajor = Math.max(latestMajor - parseInt(process.env.MAJOR_DIFF), 0);
             return `>=${fromMajor}.0.0 || >=${latestMajor}.0.0-${process.env.PRERELEASE_TAG}`;
       - name: Update bug report version
         uses: ShaMan123/gha-populate-form-version@v2.0.2
