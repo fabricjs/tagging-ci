@@ -100,7 +100,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           TAG_NAME: ${{ fromJSON(steps.release.outputs.result).tag_name }}
-          PRERELEASE: ${{ (fromJSON(steps.release.outputs.result).prerelease && '--tag ${{ env.PRERELEASE_TAG }}') || '' }}
+          PRERELEASE: ${{ (fromJSON(steps.release.outputs.result).prerelease && format('--tag {0}, env.PRERELEASE_TAG)) || '' }}
         run: |
           npm run build
           npm publish --tag ${{ env.TAG_NAME }} ${{ env.PRERELEASE }}
