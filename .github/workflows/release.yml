@@ -97,7 +97,7 @@ jobs:
             }
       - name: Publish
         if: fromJSON(steps.release.outputs.result)
-        uses: .github/workflows/publish.yml
+        uses: ./.github/workflows/publish.yml
         with:
           tag: ${{ fromJSON(steps.release.outputs.result).tag_name }}
           preid: ${{ env.PRERELEASE_TAG }}
