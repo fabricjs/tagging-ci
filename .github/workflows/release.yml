@@ -9,7 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      PRERELEASE_TAG: beta
+      # list of labels that block bumping the version
+      STRICT_NO_RELEASE_LABELS: |
+        norelease
     outputs:
       tag: ${{ fromJSON(steps.release.outputs.result) && fromJSON(steps.release.outputs.result).tag_name }}
       prerelease: ${{ fromJSON(steps.release.outputs.result) && fromJSON(steps.release.outputs.result).prerelease }}
@@ -23,10 +25,6 @@ jobs:
       - name: Release
         id: release
         uses: actions/github-script@v6
-        env:
-          # list of labels that block bumping the version
-          STRICT_NO_RELEASE_LABELS: |
-            norelease
         with:
           result-encoding: string
           script: |
