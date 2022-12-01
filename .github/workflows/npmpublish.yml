@@ -22,7 +22,7 @@ jobs:
   update-bug-report:
     runs-on: ubuntu-latest
     # wait for publishing to complete
-    needs: publish-npm
+    # needs: publish-npm
     if: always()
     steps:
       - uses: actions/checkout@v3
