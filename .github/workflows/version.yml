@@ -61,7 +61,7 @@ jobs:
               NO_RELEASE_LABELS: noReleaseLabels,
               BASE_VERSION: baseVersion,
               PRERELEASE_TAG: prereleaseTag
-            }
+            } = process.env;
             return bumpPRVersion({
               labels: context.payload.pull_request.labels,
               strictNoReleaseLabels: strictNoReleaseLabels.split('\n'),
