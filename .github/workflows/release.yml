@@ -36,7 +36,7 @@ jobs:
               data.forEach(pr => labels.push(...pr.labels));
             });
             console.log({labels});
-            if(context.payload.commits.some(commit => commit.message.includes('norelease'))) {
+            if(labels.includes('norelease') || context.payload.commits.some(commit => commit.message.includes('norelease'))) {
               console.log('Aborting release');
               return;
             }
