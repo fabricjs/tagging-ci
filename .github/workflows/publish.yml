@@ -6,6 +6,7 @@ on:
       tag:
         type: string
         default: ""
+        description: tag by npm, e.g. `npm i fabric@tag`
       preid:
         type: string
         default: "beta"
